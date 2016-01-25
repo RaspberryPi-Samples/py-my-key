@@ -12,12 +12,14 @@ from events import Event
 from readers import Reader
 from cards import Card
 
+
 class ReaderView(ModelView):
     column_display_pk = True
     can_create = False
     can_edit = False
     can_delete = False
     page_size = 50
+
 
 class CardView(ModelView):
     column_display_pk = True
@@ -26,12 +28,14 @@ class CardView(ModelView):
     can_delete = False
     page_size = 50
 
+
 class EventView(ModelView):
     column_display_pk = True
     can_create = False
     can_edit = False
     can_delete = False
     page_size = 50
+
 
 def main():
     app = Flask(__name__)

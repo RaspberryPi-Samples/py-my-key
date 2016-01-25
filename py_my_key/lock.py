@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
-import traceback
-logger = logging.getLogger(__name__)
-
 import time
 import pingo
 
 from events import Event
+
+import logging
+logger = logging.getLogger(__name__)
+
 
 class Lock(object):
     """A lock object (serrure)"""
@@ -27,29 +27,25 @@ class Lock(object):
         self.blink_task = None
         self.time_opened = time_opened
 
-    #def open_and_close(self, session, reader_id, card_id):
     def open_and_close(self, session, reader_id, card):
         self._open()
         time.sleep(self.time_opened)
         self._close()
-        #logger.info("Open and close by %s" % card_id)
         logger.info("Open and close by %s" % card.id)
 
-        #event = Event(reader_id=reader_id, card_id=card_id)
-        event = Event(reader_id=reader_id, typ='open_and_close', card_id=card.id)
+        event = Event(reader_id=reader_id,
+                      typ='open_and_close', card_id=card.id)
         session.add(event)
         card.count += 1
         session.commit()
-          
+
     def _open(self):
-        #logger.debug("Open")
         if self.lit_state == pingo.HIGH:
             self.pin.high()
         else:
             self.pin.low()
 
     def _close(self):
-        #logger.debug("Close")
         if self.lit_state == pingo.HIGH:
             self.pin.low()
         else:
