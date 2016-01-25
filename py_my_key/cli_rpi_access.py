@@ -26,12 +26,11 @@ from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.sql import func
 
 from events import Event
-from readers import Reader
 from cards import Card
 from defaults import DB_URI_DEFAULT, Base
 from lock import Lock
 from button import PushButton
-
+from readers import READER_FACTORY, BaseReader
 
 class App(object):
     def __init__(self, db_uri):
@@ -61,16 +60,20 @@ class App(object):
         red_btn_pin = self.board.pins[22]   #GPIO25
         self.red_btn = PushButton(red_btn_pin)
 
+        
+        self.Reader = READER_FACTORY.create('nxppy')
+        
     def create_readers(self):
         reader = Reader(comment='First reader')
+        logger.info(reader)
         self.session.add(reader)
         self.session.commit()
 
     def reader(self, id=None):
         if id is None:
-            return self.session.query(Reader).one()  # get the first reader
+            return self.session.query(self.Reader).one()  # get the first reader
         else:
-            return self.session.query(Reader).filter(Reader.id == id).one()
+            return self.session.query(self.Reader).filter(self.Reader.id == id).one()
 
     def run(self, reader):      
         
@@ -230,7 +233,7 @@ def main():
             try:
                 my_app = App(db_uri)
                 reader = my_app.reader(args.reader)
-                logger.info("Waiting for a card on reader %d - %s" % (reader.id, reader.comment))
+                logger.info("Waiting for a card on reader %d - %s (%s)" % (reader.id, reader.comment, reader))
                 my_app.run(reader)
             except (KeyboardInterrupt, SystemExit):
                 logger.info("Quit by CTRL+C")
