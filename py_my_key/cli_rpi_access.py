@@ -35,31 +35,30 @@ class App(object):
         Base.metadata.create_all(self.engine)
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
-        
+
         self.board = pingo.detect.get_board()
 
-        red_led_pin = self.board.pins[12]   #GPIO18
+        red_led_pin = self.board.pins[12]    # GPIO18
         self.r_led = Led(red_led_pin)
-        green_led_pin = self.board.pins[11] #GPIO17
+        green_led_pin = self.board.pins[11]  # GPIO17
         self.g_led = Led(green_led_pin)
-        
-        pin_relay = self.board.pins[7] #GPIO4
+
+        pin_relay = self.board.pins[7]       # GPIO4
         self.lock = Lock(pin_relay)
-        
+
         self.r_led.off()
         self.g_led.off()
-        #self.lock.open_and_close()
-        
-        black_btn_pin = self.board.pins[15] #GPIO22
+        # self.lock.open_and_close()
+
+        black_btn_pin = self.board.pins[15]  # GPIO22
         self.black_btn = PushButton(black_btn_pin)
-        red_btn_pin = self.board.pins[22]   #GPIO25
+        red_btn_pin = self.board.pins[22]    # GPIO25
         self.red_btn = PushButton(red_btn_pin)
 
-        
         self.Reader = READER_FACTORY.create('nxppy')
-        
+
     def create_readers(self):
-        reader = Reader(comment='First reader')
+        reader = self.Reader(comment='First reader')
         logger.info(reader)
         self.session.add(reader)
         self.session.commit()
@@ -70,45 +69,41 @@ class App(object):
         else:
             return self.session.query(self.Reader).filter(self.Reader.id == id).one()
 
-    def run(self, reader):      
-        
+    def run(self, reader):
         count_total = self.session.query(Card).count()
-        if count_total == 0: 
+        if count_total == 0:
             logger.info("No card in DB - waiting for a first card which will be considered as Master")
 
         for card_id in reader.reading():
             count_total = self.session.query(Card).count()
             if count_total == 0:
-                #No card in db, so we add automatically the card in the db as master
+                # No card in db, so we add automatically the card in the db as master
                 card = Card(id=card_id, is_master=True)
                 self.session.add(card)
 
                 event = Event(reader_id=reader.id, typ='add_master', card_id=card_id)
                 self.session.add(event)
-                
+
                 self.session.commit()
                 logger.info("Card %s have been added to DB and is considered as Master" % card_id)
-                
             else:
-                #There is at least one card in db
-                #We test if the card detected exist in db
+                # There is at least one card in db
+                # We test if the card detected exist in db
                 count = self.session.query(Card).filter(Card.id == card_id).count()
                 if count == 0:
-                    #Detected card is not in the db
+                    # Detected card is not in the db
                     event = Event(reader_id=reader.id, typ='open_not_allowed', card_id=card_id)
                     self.session.add(event)
                     self.session.commit()
-                    
                     logger.info("card %s doesn't exist" % card_id)
-                else: # count==1
-                    #The detected card is in the db
-                    #We get the card entry of the db with the card_id
+                else:  # count==1
+                    # Detected card is in the db
+                    # We get the card entry of the db with the card_id
                     card = self.session.query(Card).filter(Card.id == card_id).one()
                     if card.is_master:
-                        #The detected card is a master card
-                        
+                        # The detected card is a master card
                         if self.black_btn.pressed and self.red_btn.released:
-                            #Only BLACK button was pressed
+                            # Only BLACK button was pressed
                             logger.info("Waiting to add a card by master %s" % card_id)
                             card_id_to_add = reader.read(card_id)
                             count_card_to_add = self.session.query(Card).filter(Card.id == card_id_to_add).count()
@@ -116,19 +111,18 @@ class App(object):
                                 logger.info(card_id_to_add)
                                 card = Card(id=card_id_to_add, is_master=False)
                                 self.session.add(card)
-                                
+
                                 event = Event(reader_id=reader.id, typ='add', card_id=card_id, other_card_id=card_id_to_add)
                                 self.session.add(event)
-                                
+
                                 self.session.commit()
                                 logger.info("Card %s have been added to DB" % card_id_to_add)
                             elif card_id_to_add is None:
                                 logger.info("Time up to add a new card")
                             else:
                                 logger.info("Card %s ever exists into DB" % card_id_to_add)
-
                         elif self.black_btn.released and self.red_btn.pressed:
-                            #Only RED button was pressed
+                            # Only RED button was pressed
                             logger.info("Waiting to remove a card by master %s" % card_id)
                             card_id_to_remove = reader.read(card_id)
                             count_to_remove = self.session.query(Card).filter(Card.id == card_id_to_remove).count()
@@ -140,10 +134,8 @@ class App(object):
                                 logger.info("Card %s have been removed from DB" % card_id_to_remove)
                             else:
                                 logger.info("Card %s can't be removed because it doesn't exists into DB" % card_id_to_remove)
-                        
                         elif self.black_btn.pressed and self.red_btn.pressed:
-                            #The TWO buttons were pressed
-                            
+                            # The TWO buttons were pressed
                             logger.info("Waiting to remove or add a Master card by master %s" % card_id)
                             card_id_to_treat = reader.read(card_id)
                             if card_id_to_treat is not None:
@@ -158,8 +150,8 @@ class App(object):
                                 else:
                                     query = self.session.query(Card).filter(Card.id == card_id_to_treat)
                                     card_to_delete = query.one()
-                                    if card_to_delete.is_master:
-                                        count_masters = self.session.query(Card).filter(Card.is_master == True).count()
+                                    if card_to_delete.is_master is True:
+                                        count_masters = self.session.query(Card).filter(Card.is_master is True).count()
                                         if count_masters > 1:
                                             query.delete()
                                             event = Event(reader_id=reader.id, typ='remove_master', card_id=card_id, other_card_id=card_id_to_treat)
@@ -171,38 +163,34 @@ class App(object):
                                     else:
                                         logger.info("This card is not a master card and so can't be delete this way")
                             else:
-                                logger.info("No master card has been deleted")    
-                            
-                            
+                                logger.info("No master card has been deleted")
+
                         else:
-                            #NO button was pressed (master card)
-                            #Master card just want to open the door
-                            #self.lock.open_and_close(self.session, reader.id, card_id)
+                            # NO button was pressed (master card)
+                            # Master card just want to open the door
                             self.lock.open_and_close(self.session, reader.id, card)
                     else:
-                        #An authorized card was detected
-                        #self.lock.open_and_close(self.session, reader.id, card_id)
+                        # An authorized card was detected
                         self.lock.open_and_close(self.session, reader.id, card)
-                
-            #logger.debug("Card_id: %r" % card_id)
 
     def stats(self, tz_from='', tz_to=''):
         import pandas as pd
         from tzlocal import get_localzone
         df_events = pd.read_sql("events", self.db_uri)
-        #df_cards = pd.read_sql("cards", self.db_uri, index_col='id')
+        # df_cards = pd.read_sql("cards", self.db_uri, index_col='id')
         df_students = pd.read_sql("students", self.db_uri, index_col='id')[['name', 'firstname', 'card_id']]
         df_merged = pd.merge(df_events, df_students)
         if tz_from == '':
             tz_from = 'UTC'
         if tz_to == '':
-            tz_to = get_localzone() # 'Europe/Paris'
+            tz_to = get_localzone()  # 'Europe/Paris'
         df_merged['created'] = df_merged['created'].dt.tz_localize(tz_from).dt.tz_convert(tz_to)
         df_merged = df_merged.sort_values(['reader_id', 'id'], ascending=[True, False]).set_index(['reader_id', 'id'])
         df_merged = df_merged[['created', 'card_id', 'name', 'firstname']]
         print(df_merged)
         df_merged['created'] = df_merged['created'].dt.tz_localize(None)
         df_merged.to_excel('cards.xlsx')
+
 
 def main():
     parser = argparse.ArgumentParser(prog="main", description='Card')
@@ -220,9 +208,6 @@ def main():
         my_app = App(db_uri)
         logger.info("Create readers")
         my_app.create_readers()
-
-        #logger.info("Créer etu")
-        #my_app.creer_students()
     else:
         while(True):
             try:
@@ -233,7 +218,7 @@ def main():
             except (KeyboardInterrupt, SystemExit):
                 logger.info("Quit by CTRL+C")
                 break
-            except Exception as e:
+            except Exception:
                 logger.error(traceback.format_exc())
                 logger.error("Try again")
                 time.sleep(2)
