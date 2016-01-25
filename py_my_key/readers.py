@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import datetime
 
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, create_engine
@@ -5,7 +8,19 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.sql import func
 
-Base = declarative_base()
+
+import logging
+import traceback
+logger = logging.getLogger(__name__)
+
+try:
+    import nxppy
+    _HAS_NXPPY = True
+except ImportError:
+    _HAS_NXPPY = False
+    logger.warning("Can't import nxppy")
+
+from defaults import Base
 
 class Reader(Base):
     __tablename__ = 'readers'

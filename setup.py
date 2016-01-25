@@ -131,7 +131,8 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'rpi_access=rasp_access.cli_rpi_access:main',
+            'py_my_key=py_my_key.cli_rpi_access:main',
+            'db_admin=py_my_key.cli_db_admin:main',
         ],
     },
 )
