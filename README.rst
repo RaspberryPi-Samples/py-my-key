@@ -1,5 +1,5 @@
 ===============================
-Rasp Access
+Py-My-Key
 ===============================
 
 .. image:: https://img.shields.io/pypi/v/py-my-key.svg
