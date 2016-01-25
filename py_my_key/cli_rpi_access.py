@@ -3,17 +3,22 @@
 
 from __future__ import print_function
 
-#from rasp_access import rasp_access
-
-import nxppy
 import argparse
 
 import time
-import datetime
 
-import RPi.GPIO as GPIO
 import pingo
 from pingo.parts.led import Led
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from events import Event
+from cards import Card
+from defaults import DB_URI_DEFAULT, Base
+from lock import Lock
+from button import PushButton
+from readers import READER_FACTORY
 
 import logging
 import traceback
@@ -21,16 +26,6 @@ logging.Formatter.converter = time.gmtime
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, create_engine
-from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.sql import func
-
-from events import Event
-from cards import Card
-from defaults import DB_URI_DEFAULT, Base
-from lock import Lock
-from button import PushButton
-from readers import READER_FACTORY, BaseReader
 
 class App(object):
     def __init__(self, db_uri):
