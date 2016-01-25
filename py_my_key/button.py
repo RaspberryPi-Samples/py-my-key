@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import pingo
-import time
+
 
 class PushButton(object):
     """A single Push button"""
     def __init__(self, pin, pressed_state=pingo.LOW):
         """Set pressed_state to pingo.LOW when button is pressed
         :param pin: A instance of DigitalPin
-        :param pressed_state: use pingo.LOW for pull-up, pingo.HIGH for pull-down
+        :param pressed_state: use pingo.LOW for pull-up,
+            pingo.HIGH for pull-down
         """
         pin.mode = pingo.IN
         self.pin = pin
@@ -24,7 +25,7 @@ class PushButton(object):
         if not isinstance(self.pin.board, pingo.ghost.ghost.GhostBoard):
             raise(NotImplementedError('pin from a GhostBoard is required'))
         elif not isinstance(self.pin, pingo.board.DigitalPin):
-            raise(NotImplementedError('DigitalPin is required'))                
+            raise(NotImplementedError('DigitalPin is required'))
 
     def press(self):
         self._test_pin_instance()
