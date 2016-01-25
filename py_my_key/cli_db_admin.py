@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import argparse
+
 from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from defaults import DB_URI_DEFAULT, Base
 
 from events import Event
-from readers import Reader
+from readers import BaseReader
 from cards import Card
 
 
@@ -38,6 +40,11 @@ class EventView(ModelView):
 
 
 def main():
+    parser = argparse.ArgumentParser(prog="main", description='Card')
+    parser.add_argument('--db_uri', help="Database URI",
+                        default=DB_URI_DEFAULT)
+    args = parser.parse_args()
+
     app = Flask(__name__)
 
     admin = Admin(app, name='py-my-key', template_mode='bootstrap3')
@@ -45,14 +52,12 @@ def main():
 
     # Flask and Flask-SQLAlchemy initialization here
 
-    db_uri = 'sqlite:///cards.db'
-    Base = declarative_base()
-    engine = create_engine(db_uri)
+    engine = create_engine(args.db_uri)
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    admin.add_view(ReaderView(Reader, session))
+    admin.add_view(ReaderView(BaseReader, session, "Reader"))
     admin.add_view(CardView(Card, session))
     admin.add_view(EventView(Event, session))
 
