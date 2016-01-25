@@ -8,7 +8,7 @@ import io
 
 here = path.abspath(path.dirname(__file__))
 
-NAME = 'rasp_access'
+NAME = 'py_my_key'
 filename = path.join(NAME, 'version.py')
 with open(filename) as f:
     exec(f.read())
