@@ -14,7 +14,6 @@ import datetime
 import RPi.GPIO as GPIO
 import pingo
 from pingo.parts.led import Led
-from pingo.parts.button import Switch
 
 import logging
 import traceback
@@ -31,6 +30,7 @@ from readers import Reader
 from cards import Card
 from defaults import DB_URI_DEFAULT, Base
 from lock import Lock
+from button import PushButton
 
 
 class App(object):
@@ -57,9 +57,9 @@ class App(object):
         #self.lock.open_and_close()
         
         black_btn_pin = self.board.pins[15] #GPIO22
-        self.black_btn = Switch(black_btn_pin)
+        self.black_btn = PushButton(black_btn_pin)
         red_btn_pin = self.board.pins[22]   #GPIO25
-        self.red_btn = Switch(red_btn_pin)
+        self.red_btn = PushButton(red_btn_pin)
 
     def create_readers(self):
         reader = Reader(comment='First reader')
@@ -109,7 +109,7 @@ class App(object):
                     if card.is_master:
                         #The detected card is a master card
                         
-                        if self.black_btn.pin.state == pingo.LOW and self.red_btn.pin.state == pingo.HIGH:
+                        if self.black_btn.pressed and self.red_btn.released:
                             #Only BLACK button was pressed
                             logger.info("Waiting to add a card by master %s" % card_id)
                             card_id_to_add = reader.read(card_id)
@@ -129,7 +129,7 @@ class App(object):
                             else:
                                 logger.info("Card %s ever exists into DB" % card_id_to_add)
 
-                        elif self.black_btn.pin.state == pingo.HIGH and self.red_btn.pin.state == pingo.LOW:
+                        elif self.black_btn.released and self.red_btn.pressed:
                             #Only RED button was pressed
                             logger.info("Waiting to remove a card by master %s" % card_id)
                             card_id_to_remove = reader.read(card_id)
@@ -143,7 +143,7 @@ class App(object):
                             else:
                                 logger.info("Card %s can't be removed because it doesn't exists into DB" % card_id_to_remove)
                         
-                        elif self.black_btn.pin.state == pingo.LOW and self.red_btn.pin.state == pingo.LOW:
+                        elif self.black_btn.pressed and self.red_btn.pressed:
                             #The TWO buttons were pressed
                             
                             logger.info("Waiting to remove or add a Master card by master %s" % card_id)
@@ -158,15 +158,20 @@ class App(object):
                                     self.session.commit()
                                     logger.info("Card %s have been added as Master to DB" % card_id_to_treat)
                                 else:
-                                    count_masters = self.session.query(Card).filter(Card.is_master == True).count()
-                                    if count_masters > 1:
-                                        self.session.query(Card).filter(Card.id == card_id_to_treat).delete()
-                                        event = Event(reader_id=reader.id, typ='remove_master', card_id=card_id, other_card_id=card_id_to_treat)
-                                        self.session.add(event)
-                                        self.session.commit()
-                                        logger.info("Card %s have been removed from DB" % card_id_to_treat)
-                                    #else:
-                                        #logger.info("This master card can't be delete because it the last one")
+                                    query = self.session.query(Card).filter(Card.id == card_id_to_treat)
+                                    card_to_delete = query.one()
+                                    if card_to_delete.is_master:
+                                        count_masters = self.session.query(Card).filter(Card.is_master == True).count()
+                                        if count_masters > 1:
+                                            query.delete()
+                                            event = Event(reader_id=reader.id, typ='remove_master', card_id=card_id, other_card_id=card_id_to_treat)
+                                            self.session.add(event)
+                                            self.session.commit()
+                                            logger.info("Master card %s have been removed from DB" % card_id_to_treat)
+                                        else:
+                                            logger.info("Master card %s can't be deleted because it's the last one" % card_id_to_treat)
+                                    else:
+                                        logger.info("This card is not a master card and so can't be delete this way")
                             else:
                                 logger.info("No master card has been deleted")    
                             
