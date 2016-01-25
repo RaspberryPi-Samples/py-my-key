@@ -24,7 +24,6 @@ with io.open(filename, 'rt', encoding='UTF-8') as f:
 requirements = [
     # TODO: put package requirements here
     'tzlocal',
-    'nxppy',
     'pingo'
 ]
 
@@ -111,6 +110,7 @@ setup(
     extras_require = {
         'dev': ['check-manifest', 'nose'],
         'test': ['coverage', 'nose'],
+        'hw_nxp_rpi': ['nxppy'],
     },
 
     # If there are data files included in your packages that need to be
