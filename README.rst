@@ -26,7 +26,7 @@ Py-My-Key
 .. image:: https://landscape.io/github/RaspberryPi-Samples/py-my-key/master/landscape.svg?style=flat
         :target: https://landscape.io/github/RaspberryPi-Samples/py-my-key/master
 
-.. image:: https://www.codacy.com/project/badge/BADGEID
+.. image:: https://www.codacy.com/project/badge/9e7db4d910c24cebb9caed6571acd08b
         :target: https://www.codacy.com/app/s-celles/py-my-key/
 
 .. image:: https://readthedocs.org/projects/py-my-key/badge/?version=latest
