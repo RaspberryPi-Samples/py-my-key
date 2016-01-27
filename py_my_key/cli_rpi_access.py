@@ -195,7 +195,7 @@ def main():
     args = parser.parse_args()
 
     db_uri = args.db_uri
-    reader_name = args.reader_name
+    reader_name = args.readername
     hardware_name = args.hardwarename
     reader_id = args.reader
     if args.stats:
