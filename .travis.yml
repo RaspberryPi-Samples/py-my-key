@@ -6,3 +6,4 @@ install:
 script:
   - flake8 --version
   - flake8 --ignore=E501 py_my_key
+  - nosetests -s -v
