@@ -24,7 +24,8 @@ with io.open(filename, 'rt', encoding='UTF-8') as f:
 requirements = [
     # TODO: put package requirements here
     'tzlocal',
-    'pingo'
+    'pingo',
+    'sqlalchemy'
 ]
 
 test_requirements = [
