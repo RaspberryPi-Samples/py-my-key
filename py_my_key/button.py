@@ -20,6 +20,8 @@ class PushButton(object):
             pingo.HIGH: pingo.LOW,
         }
         self._released_state = d[pressed_state]
+        if isinstance(self.pin.board, pingo.ghost.ghost.GhostBoard):
+            self.pin.board._set_pin_state(self.pin, self._released_state)
 
     def _test_pin_instance(self):
         if not isinstance(self.pin.board, pingo.ghost.ghost.GhostBoard):
