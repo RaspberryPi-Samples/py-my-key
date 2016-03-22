@@ -93,7 +93,7 @@ class App(object):
                 # We get the card entry of the db with the card_id
                 card = self.session.query(Card).filter(Card.id == card_id).one()
                 if card.is_master:
-                    # The detected card is a master card
+                    # Detected card is a master card
                     if self.hw.black_btn.pressed and self.hw.red_btn.released:
                         # Only BLACK button was pressed
                         logger.info("Waiting to add a card by master %s" % card_id)
@@ -188,7 +188,7 @@ def main():
     parser = argparse.ArgumentParser(prog="main", description='Card')
     parser.add_argument('--reader', help="Reader id", default=1)
     parser.add_argument('--readername', help="Reader name", default='nxppy')
-    parser.add_argument('--hardwarename', help="Reader name", default='rpi')
+    parser.add_argument('--hardwarename', help="Harware name", default='rpi')
     parser.add_argument('--db_uri', help="Database URI", default=DB_URI_DEFAULT)
     parser.add_argument('--init', dest='init', action='store_true')
     parser.add_argument('--stats', dest='stats', action='store_true')
