@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class Lock(object):
     """A lock object (serrure)"""
 
-    def __init__(self, pin, lit_state=pingo.HIGH, time_opened=2):
+    def __init__(self, pin, lit_state=pingo.HIGH, time_opened=5):
         """Set lit_state to pingo.LOW to turn on led by bringing
            cathode to low state.
 
@@ -24,7 +24,6 @@ class Lock(object):
         pin.mode = pingo.OUT
         self.pin = pin
         self.lit_state = lit_state
-        self.blink_task = None
         self.time_opened = time_opened
 
     def open_and_close(self, session, reader_id, card):

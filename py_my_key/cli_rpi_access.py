@@ -84,6 +84,7 @@ class App(object):
             count = self.session.query(Card).filter(Card.id == card_id).count()
             if count == 0:
                 # Detected card is not in the db
+                #self.hw.r_led.blink(times=5, on_delay=0.5, off_delay=0.5) #pb doesn't work fine
                 event = Event(reader_id=reader.id, typ='open_not_allowed', card_id=card_id)
                 self.session.add(event)
                 self.session.commit()
@@ -160,10 +161,14 @@ class App(object):
                     else:
                         # NO button was pressed (master card)
                         # Master card just want to open the door
+                        self.hw.g_led.on()
                         self.hw.lock.open_and_close(self.session, reader.id, card)
+                        self.hw.g_led.off()
                 else:
                     # An authorized card was detected
+                    self.hw.g_led.on()
                     self.hw.lock.open_and_close(self.session, reader.id, card)
+                    self.hw.g_led.off()
 
     def stats(self, tz_from='', tz_to=''):
         import pandas as pd
