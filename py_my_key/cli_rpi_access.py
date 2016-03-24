@@ -85,10 +85,15 @@ class App(object):
             if count == 0:
                 # Detected card is not in the db
                 #self.hw.r_led.blink(times=5, on_delay=0.5, off_delay=0.5) #pb doesn't work fine
+                # next line for a temporary demo
+                self.hw.r_led.on()
                 event = Event(reader_id=reader.id, typ='open_not_allowed', card_id=card_id)
                 self.session.add(event)
                 self.session.commit()
                 logger.info("card %s doesn't exist" % card_id)
+                # 2 next lines are only for a temporary demo
+                time.sleep(2)
+                self.hw.r_led.off()
             else:  # count==1
                 # Detected card is in the db
                 # We get the card entry of the db with the card_id

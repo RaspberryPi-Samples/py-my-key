@@ -57,6 +57,6 @@ class Lock(object):
     @opened.setter
     def opened(self, new_state):
         if new_state:
-            self.on()
+            self._open()
         else:
-            self.off()
+            self._close()
