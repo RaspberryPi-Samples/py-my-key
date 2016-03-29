@@ -3,7 +3,7 @@
 
 from abc import ABCMeta, abstractmethod
 import pingo
-from pingo.parts.led import Led
+from led import Led, BlinkTask
 from lock import Lock
 from button import PushButton
 from factory import Factory
