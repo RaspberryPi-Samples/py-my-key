@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import pingo
 
 import time
@@ -17,7 +20,7 @@ class Led(object):
         pin.mode = pingo.OUT
         self.pin = pin
         self.lit_state = lit_state
-        self.blink_task = None
+        #self.blink_task = None
 
     def on(self):
         if self.lit_state == pingo.HIGH:
@@ -63,7 +66,7 @@ class Led(object):
         
         self.blinkThread = BlinkTask(self, times, on_delay, off_delay)
         self.blinkThread.start()
-        self.blinkThread.join()
+        #self.blinkThread.join()
 
     def stop(self):
         """Stop blinking"""

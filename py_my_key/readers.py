@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import time
 import datetime
 
 from sqlalchemy import Column, Integer, String, DateTime
@@ -27,7 +28,7 @@ class BaseReader(Base):
     comment = Column(String(60))
     created = Column(DateTime, default=func.now())
     updated = Column(DateTime, default=func.now(), onupdate=func.now())
-
+    
     def _read(self):
         logger.info("BaseReader _read")
 
@@ -48,6 +49,7 @@ class BaseReader(Base):
 
                 data_prev = data
                 dt_prev = dt
+            time.sleep(0.1)
 
     def read(self, card_id_master, td_limit=datetime.timedelta(seconds=10)):
         dt_start_waiting_card = datetime.datetime.utcnow()
@@ -59,6 +61,7 @@ class BaseReader(Base):
             if dt - dt_start_waiting_card > td_limit:
                 card_id = None
                 break
+            time.sleep(0.1)
         return card_id
 
 
