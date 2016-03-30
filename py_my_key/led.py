@@ -44,7 +44,8 @@ class Led(object):
 
     @property
     def blinking(self):
-        return self.blink_task is not None and self.blink_task.active
+        #return self.blink_task is not None and self.blink_task.active
+        return not self.blinkThread.isAlive() and self.blinkThread.active
 
     def toggle(self):
         self.pin.toggle()
@@ -55,20 +56,24 @@ class Led(object):
         :param on_delay: delay while LED is on
         :param off_delay: delay while LED is off
         """
-        if self.blinking:
-            self.stop()
-        self.blink_task = BlinkTask(self, times, on_delay, off_delay)
-        threading.Thread(target=self.blink_task.run).start()
+        #if self.blinking:
+        #    self.stop()
+        #self.blink_task = BlinkTask(self, times, on_delay, off_delay)
+        #threading.Thread(target=self.blink_task.run).start()
+        
+        self.blinkThread = BlinkTask(self, times, on_delay, off_delay)
+        self.blinkThread.start()
+        self.blinkThread.join()
 
     def stop(self):
         """Stop blinking"""
         if self.blinking:
-            self.blink_task.terminate()
-            self.blink_task = None
-
+            #self.blink_task.terminate()
+            #self.blink_task = None
+            self.blinkThread.terminate()
             
             
-class BlinkTask(object):
+class BlinkTask(threading.Thread):
 
     def __init__(self, led, times, on_delay, off_delay):
         """
@@ -77,6 +82,8 @@ class BlinkTask(object):
         :param on_delay: delay while LED is on
         :param off_delay: delay while LED is off
         """
+        threading.Thread.__init__(self)
+        self.name = "BlinkTask"
         self.led = led
         self.led_pin_state_initial = self.led.pin.state
         self.active = True
