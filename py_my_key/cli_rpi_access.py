@@ -84,7 +84,7 @@ class App(object):
             count = self.session.query(Card).filter(Card.id == card_id).count()
             if count == 0:
                 # Detected card is not in the db
-                self.hw.r_led.blink(times=10, on_delay=0.5, off_delay=None)  # pb doesn't work
+                self.hw.r_led.blink(times=5, on_delay=0.2, off_delay=None)  # pb doesn't work
                 event = Event(reader_id=reader.id, typ='open_not_allowed', card_id=card_id)
                 self.session.add(event)
                 self.session.commit()
