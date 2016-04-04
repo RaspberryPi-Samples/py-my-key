@@ -28,7 +28,7 @@ class BaseReader(Base):
     comment = Column(String(60))
     created = Column(DateTime, default=func.now())
     updated = Column(DateTime, default=func.now(), onupdate=func.now())
-    
+
     def _read(self):
         logger.info("BaseReader _read")
 
