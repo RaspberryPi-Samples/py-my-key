@@ -37,7 +37,6 @@ class BaseReader(Base):
         td_limit = datetime.timedelta(seconds=5)
         dt_prev = datetime.datetime.utcnow()
         while(True):
-            print("******************* reading (basereader) : self._read()")
             data = self._read()
             if data is not None:
                 dt = datetime.datetime.utcnow()
@@ -56,7 +55,6 @@ class BaseReader(Base):
         dt_start_waiting_card = datetime.datetime.utcnow()
         while True:
             dt = datetime.datetime.utcnow()
-            print("******************* read (basereader) : card_id = self._read()")
             card_id = self._read()
             if card_id is not None and card_id != card_id_master:
                 break
@@ -73,18 +71,12 @@ class NxppyReader(BaseReader):
         self.mifare = nxppy.Mifare()
         
     def _read(self):
-        #try:
-            #print("******************* _read (nxppy) : nxppy.Mifare()")
-            #mifare = nxppy.Mifare()
-        #except:
-            #print("******************* _read (nxppy) : nxppy.Mifare() : ERROR")
-            #pass
+        #print("******************* _read (nxppy) : nxppy.Mifare()")
+        #mifare = nxppy.Mifare()
         data = ''
         try:
-            print("******************* _read (nxppy) : mifare.select()")
             data = mifare.select()
         except nxppy.SelectError:
-            print("******************* _read (nxppy) : mifare.select() ERROR")
             pass
         if data != '':
             return data
