@@ -26,7 +26,6 @@ logger = logging.getLogger(__name__)
 class App(object):
     def __init__(self, db_uri, hardware_name, reader_name):
         self.db_uri = db_uri
-
         self.engine = create_engine(db_uri)
         Base.metadata.create_all(self.engine)
         Session = sessionmaker(bind=self.engine)
