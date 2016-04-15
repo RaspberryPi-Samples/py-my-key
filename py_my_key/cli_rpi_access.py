@@ -189,6 +189,7 @@ class App(object):
         df_merged['created'] = df_merged['created'].dt.tz_localize(None)
         df_merged.to_excel('cards.xlsx')
 
+        
 def main():
     parser = argparse.ArgumentParser(prog="main", description='Card')
     parser.add_argument('--reader', help="Reader id", default=1)

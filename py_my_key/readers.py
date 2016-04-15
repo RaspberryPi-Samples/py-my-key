@@ -28,7 +28,7 @@ class BaseReader(Base):
     comment = Column(String(60))
     created = Column(DateTime, default=func.now())
     updated = Column(DateTime, default=func.now(), onupdate=func.now())
-    
+
     def initialize(self):
         pass
 
@@ -72,7 +72,7 @@ class NxppyReader(BaseReader):
     def initialize(self):
         self.mifare = nxppy.Mifare()
 
-    def _read(self):            
+    def _read(self):
         data = ''
         try:
             data = self.mifare.select()
