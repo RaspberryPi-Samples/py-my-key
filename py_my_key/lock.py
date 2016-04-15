@@ -9,6 +9,7 @@ from events import Event
 import logging
 logger = logging.getLogger(__name__)
 
+
 class Lock(object):
     """A lock object (serrure)"""
 
@@ -30,7 +31,7 @@ class Lock(object):
         self._open()
         time.sleep(self.time_opened)
         self._close()
-        
+
         event = Event(reader_id=reader_id,
                       typ='open_and_close', card_id=card.id)
         session.add(event)

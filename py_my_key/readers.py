@@ -28,6 +28,9 @@ class BaseReader(Base):
     comment = Column(String(60))
     created = Column(DateTime, default=func.now())
     updated = Column(DateTime, default=func.now(), onupdate=func.now())
+    
+    def initialize(self):
+        pass
 
     def _read(self):
         logger.info("BaseReader _read")
@@ -66,16 +69,13 @@ class BaseReader(Base):
 
 
 class NxppyReader(BaseReader):
-    def __init__(self):
-        print("******************* _init- (nxppy) : nxppy.Mifare()")
+    def initialize(self):
         self.mifare = nxppy.Mifare()
-        
-    def _read(self):
-        #print("******************* _read (nxppy) : nxppy.Mifare()")
-        #mifare = nxppy.Mifare()
+
+    def _read(self):            
         data = ''
         try:
-            data = mifare.select()
+            data = self.mifare.select()
         except nxppy.SelectError:
             pass
         if data != '':
