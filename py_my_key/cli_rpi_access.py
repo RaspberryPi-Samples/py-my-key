@@ -53,6 +53,7 @@ class App(object):
             return self.session.query(self.Reader).filter(self.Reader.id == id).one()
 
     def run(self, reader):
+        reader.initialize()
         self._at_startup()
         self._loop(reader)
 
@@ -214,7 +215,7 @@ def main():
             try:
                 my_app = App(db_uri, hardware_name, reader_name)
                 reader = my_app.reader(reader_id)
-                reader.initialize()
+                # reader.initialize()
                 logger.info("Waiting for a card on reader %d - %s (%s)" % (reader.id, reader.comment, reader))
                 my_app.run(reader)
             except (KeyboardInterrupt, SystemExit):
