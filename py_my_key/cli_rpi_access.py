@@ -53,7 +53,7 @@ class App(object):
             return self.session.query(self.Reader).filter(self.Reader.id == id).one()
 
     def run(self, reader):
-        reader.initialize()
+        reader.initialize()  # initialize the reader
         self._at_startup()
         self._loop(reader)
 
