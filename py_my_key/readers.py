@@ -30,7 +30,7 @@ class BaseReader(Base):
     updated = Column(DateTime, default=func.now(), onupdate=func.now())
 
     def initialize(self):
-        pass
+        self.tts = 0.1
 
     def _read(self):
         logger.info("BaseReader _read")
@@ -52,7 +52,7 @@ class BaseReader(Base):
 
                 data_prev = data
                 dt_prev = dt
-            time.sleep(0.1)
+            time.sleep(self.tts)
 
     def read(self, card_id_master, td_limit=datetime.timedelta(seconds=10)):
         dt_start_waiting_card = datetime.datetime.utcnow()
@@ -64,13 +64,14 @@ class BaseReader(Base):
             if dt - dt_start_waiting_card > td_limit:
                 card_id = None
                 break
-            time.sleep(0.1)
+            time.sleep(self.tts)
         return card_id
 
 
 class NxppyReader(BaseReader):
     def initialize(self):
         self.mifare = nxppy.Mifare()
+        self.tts = 0.1
 
     def _read(self):
         data = ''
@@ -85,6 +86,9 @@ class NxppyReader(BaseReader):
 
 
 class TestReader(BaseReader):
+    def initialize(self):
+        self.tts = 0
+
     def initialize_data(self, lst_data):
         self._lst_data = lst_data
         self._i = -1
