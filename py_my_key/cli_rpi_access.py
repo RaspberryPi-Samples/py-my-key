@@ -96,7 +96,8 @@ class App(object):
                 if card.is_master:
                     # Detected card is a master card
                     if self.hw.black_btn.pressed and self.hw.red_btn.released:
-                        # Only BLACK button was pressed
+                        # Only BLACK button was pressed (adding a user card)
+                        self.hw.g_led.on()
                         logger.info("Waiting to add a card by master %s" % card_id)
                         card_id_to_add = reader.read(card_id)
                         count_card_to_add = self.session.query(Card).filter(Card.id == card_id_to_add).count()
@@ -114,8 +115,10 @@ class App(object):
                             logger.info("Time up to add a new card")
                         else:
                             logger.info("Card %s ever exists into DB" % card_id_to_add)
+                        self.hw.g_led.off()
                     elif self.hw.black_btn.released and self.hw.red_btn.pressed:
-                        # Only RED button was pressed
+                        # Only RED button was pressed  (removing a user card)
+                        self.hw.r_led.on()
                         logger.info("Waiting to remove a card by master %s" % card_id)
                         card_id_to_remove = reader.read(card_id)
                         count_to_remove = self.session.query(Card).filter(Card.id == card_id_to_remove).count()
@@ -125,10 +128,15 @@ class App(object):
                             self.session.add(event)
                             self.session.commit()
                             logger.info("Card %s have been removed from DB" % card_id_to_remove)
-                        else:
+                        elif card_id_to_remove is not None:
                             logger.info("Card %s can't be removed because it doesn't exists into DB" % card_id_to_remove)
+                        else:
+                            logger.info("Time up to remove a card")
+                        self.hw.r_led.off()
                     elif self.hw.black_btn.pressed and self.hw.red_btn.pressed:
-                        # The TWO buttons were pressed
+                        # The TWO buttons were pressed  (adding or removing a masterr card)
+                        self.hw.g_led.blink(times=0)
+                        self.hw.r_led.blink(times=0)
                         logger.info("Waiting to remove or add a Master card by master %s" % card_id)
                         card_id_to_treat = reader.read(card_id)
                         if card_id_to_treat is not None:
@@ -157,18 +165,20 @@ class App(object):
                                     logger.info("This card is not a master card and so can't be delete this way")
                         else:
                             logger.info("No master card has been deleted")
+                        self.hw.g_led.stop()
+                        self.hw.r_led.stop()
 
                     else:
                         # NO button was pressed (master card)
                         # Master card just want to open the door
-                        self.hw.g_led.on()
+                        self.hw.g_led.blink(times = 0, on_delay=0.2, off_delay=None)
                         self.hw.lock.open_and_close(self.session, reader.id, card)
-                        self.hw.g_led.off()
+                        self.hw.g_led.stop()
                 else:
                     # An authorized card was detected
-                    self.hw.g_led.on()
+                    self.hw.g_led.blink(times = 0, on_delay=0.2, off_delay=None)
                     self.hw.lock.open_and_close(self.session, reader.id, card)
-                    self.hw.g_led.off()
+                    self.hw.g_led.stop()
 
     def stats(self, tz_from='', tz_to=''):
         import pandas as pd

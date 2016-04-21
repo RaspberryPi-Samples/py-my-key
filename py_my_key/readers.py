@@ -55,8 +55,10 @@ class BaseReader(Base):
                 dt_prev = dt
             time.sleep(self.tts)
 
-    def read(self, card_id_master, td_limit=datetime.timedelta(seconds=self.ttc)):
+    # def read(self, card_id_master, td_limit=datetime.timedelta(seconds=10)):
+    def read(self, card_id_master):
         dt_start_waiting_card = datetime.datetime.utcnow()
+        td_limit = datetime.timedelta(seconds=self.wfc)
         while True:
             dt = datetime.datetime.utcnow()
             card_id = self._read()
@@ -72,7 +74,7 @@ class BaseReader(Base):
 class NxppyReader(BaseReader):
     def initialize(self):
         self.mifare = nxppy.Mifare()
-        self.tts = 0.1
+        self.tts = 0.5
         self.wfc = 10
 
     def _read(self):
