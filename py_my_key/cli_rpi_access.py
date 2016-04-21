@@ -152,7 +152,7 @@ class App(object):
                                 query = self.session.query(Card).filter(Card.id == card_id_to_treat)
                                 card_to_delete = query.one()
                                 if card_to_delete.is_master is True:
-                                    count_masters = self.session.query(Card).filter(Card.is_master is True).count()
+                                    count_masters = self.session.query(Card).filter(Card.is_master == True).count()
                                     if count_masters > 1:
                                         query.delete()
                                         event = Event(reader_id=reader.id, typ='remove_master', card_id=card_id, other_card_id=card_id_to_treat)
