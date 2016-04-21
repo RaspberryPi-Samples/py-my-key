@@ -35,8 +35,10 @@ class TestPyMyKey:
 
     def test_000_something(self):
         my_app = App(self.db_uri, self.hardware_name, self.reader_name)
+        my_app.hw.lock.time_opened = 0
         my_app.create_reader()  # init
         reader = my_app.reader(self.reader_id)
+        reader.initialize()
         reader.initialize_data(['A0000000',
             'A0000001', 
             'A0000000', 'A0000001',
@@ -47,12 +49,12 @@ class TestPyMyKey:
         # First card (A0000000) is set as master
         card_id = reader._read()
         my_app._process(reader, card_id)
-        #time.sleep(1)
+        # time.sleep(1)
 
         # A0000001 try to enter but is not allowed
         card_id = reader._read()
         my_app._process(reader, card_id)
-        #my_app._hw.black_btn.press()
+        # my_app._hw.black_btn.press()
 
         # Allow A0000001 to enter (by A0000000)
         my_app.hw.black_btn.press()

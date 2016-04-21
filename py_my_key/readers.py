@@ -31,6 +31,7 @@ class BaseReader(Base):
 
     def initialize(self):
         self.tts = 0.1
+        self.wfc = 10  # waiting for a card timeout
 
     def _read(self):
         logger.info("BaseReader _read")
@@ -54,7 +55,7 @@ class BaseReader(Base):
                 dt_prev = dt
             time.sleep(self.tts)
 
-    def read(self, card_id_master, td_limit=datetime.timedelta(seconds=10)):
+    def read(self, card_id_master, td_limit=datetime.timedelta(seconds=self.ttc)):
         dt_start_waiting_card = datetime.datetime.utcnow()
         while True:
             dt = datetime.datetime.utcnow()
@@ -72,6 +73,7 @@ class NxppyReader(BaseReader):
     def initialize(self):
         self.mifare = nxppy.Mifare()
         self.tts = 0.1
+        self.wfc = 10
 
     def _read(self):
         data = ''
@@ -88,6 +90,7 @@ class NxppyReader(BaseReader):
 class TestReader(BaseReader):
     def initialize(self):
         self.tts = 0
+        self.wfc = 0
 
     def initialize_data(self, lst_data):
         self._lst_data = lst_data
