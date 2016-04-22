@@ -152,7 +152,7 @@ class App(object):
                                 query = self.session.query(Card).filter(Card.id == card_id_to_treat)
                                 card_to_delete = query.one()
                                 if card_to_delete.is_master is True:
-                                    count_masters = self.session.query(Card).filter(Card.is_master == True).count()
+                                    count_masters = self.session.query(Card).filter(Card.is_master == True).count()  # filter "Card.is_master == True" is not accepted by sqlalchemy
                                     if count_masters > 1:
                                         query.delete()
                                         event = Event(reader_id=reader.id, typ='remove_master', card_id=card_id, other_card_id=card_id_to_treat)
@@ -171,12 +171,12 @@ class App(object):
                     else:
                         # NO button was pressed (master card)
                         # Master card just want to open the door
-                        self.hw.g_led.blink(times = 0, on_delay=0.2, off_delay=None)
+                        self.hw.g_led.blink(times=0, on_delay=0.2, off_delay=None)
                         self.hw.lock.open_and_close(self.session, reader.id, card)
                         self.hw.g_led.stop()
                 else:
                     # An authorized card was detected
-                    self.hw.g_led.blink(times = 0, on_delay=0.2, off_delay=None)
+                    self.hw.g_led.blink(times=0, on_delay=0.2, off_delay=None)
                     self.hw.lock.open_and_close(self.session, reader.id, card)
                     self.hw.g_led.stop()
 
