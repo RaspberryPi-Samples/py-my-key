@@ -27,7 +27,7 @@ class TestPyMyKey:
         self.hardware_name = 'ghost'
         self.reader_name = 'test'
         self.reader_id = 1
-        # print("setup")
+        #  print("setup")
 
     def tearDown(self):
         pass
