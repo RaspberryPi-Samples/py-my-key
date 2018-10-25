@@ -40,10 +40,10 @@ class TestPyMyKey:
         reader = my_app.reader(self.reader_id)
         reader.initialize()
         reader.initialize_data(['A0000000',
-            'A0000001', 
-            'A0000000', 'A0000001',
-            'A0000000',
-            'A0000001'])
+                                'A0000001',
+                                'A0000000', 'A0000001',
+                                'A0000000',
+                                'A0000001'])
         my_app._at_startup()
 
         # First card (A0000000) is set as master
