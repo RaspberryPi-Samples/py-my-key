@@ -106,6 +106,7 @@ class TestReader(BaseReader):
         for data in self._lst_data:
             yield data
 
+
 _DEFAULT_READER_NAME = 'nxppy'
 
 
