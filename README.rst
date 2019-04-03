@@ -24,10 +24,8 @@ Py-My-Key
         :target: https://requires.io/github/RaspberryPi-Samples/py-my-key/requirements/?branch=master
 
 .. image:: https://landscape.io/github/RaspberryPi-Samples/py-my-key/master/landscape.svg?style=flat
-        :target: https://landscape.io/github/RaspberryPi-Samples/py-my-key/master
-
-.. image:: https://www.codacy.com/project/badge/9e7db4d910c24cebb9caed6571acd08b
-        :target: https://www.codacy.com/app/s-celles/py-my-key/
+   :target: https://landscape.io/github/RaspberryPi-Samples/py-my-key/master
+   :alt: Code Health
 
 .. image:: https://readthedocs.org/projects/py-my-key/badge/?version=latest
         :target: https://readthedocs.org/projects/py-my-key/?badge=latest
